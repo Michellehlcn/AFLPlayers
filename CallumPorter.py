@@ -44,6 +44,7 @@
 # }
 import pandas as pd
 import time
+import csv
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.ui import Select, WebDriverWait
@@ -63,7 +64,7 @@ wait = WebDriverWait(driver, 20)
 time.sleep(2)
 desc = driver.find_elements(By.XPATH, '//*[contains(@data-testid, "total-statistics")]' )[0]
 id="1"
-name=""
+name="Callum Porter"
 
 career_games_played = desc.find_elements(By.TAG_NAME, "div")[0].find_elements(By.TAG_NAME, "span")[0].text
 career_total_goals = desc.find_elements(By.TAG_NAME, "div")[1].find_elements(By.TAG_NAME, "span")[0].text
@@ -187,6 +188,43 @@ player.append({
 })
 
 print(player)
-df = pd.DataFrame(player)
-print(df)
-df.to_csv("sample.csv", sep='\t', encoding='utf-8')
+
+with open('names.csv', 'w', newline='') as csvfile:
+    fieldnames = ['desc', 'id']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+    writer.writeheader()
+    for key, value in player[0].items():
+        if type(value) is list: #[]
+            for item1 in value:
+                for k1, v1 in item1.items():
+                    if type(v1) is list:
+                        for item2 in v1:
+                            for k2, v2 in item2.items():
+                                if type(v2) is list:
+                                    for item3 in v2:
+                                        for k3, v3 in item3.items():
+                                            if type(v3) is list:
+                                                for item4 in v3:
+                                                    for k4, v4 in item4.items():
+                                                        if type(v4) is list:
+                                                            for item5 in v4:
+                                                                for k5, v5 in item5.items():
+                                                                    if type(v5) is list:
+                                                                        for item6 in v5:
+                                                                            for k6, v6 in item6.items():
+                                                                                writer.writerow({'desc': f"{key}.{k1}.{k2}.{k3}.{k4}.{k5}.{k6}", 'id': v6})
+                                                                    else:
+                                                                        writer.writerow({'desc': f"{key}.{k1}.{k2}.{k3}.{k4}.{k5}", 'id': v5})
+                                                        else:
+                                                            writer.writerow({'desc': f"{key}.{k1}.{k2}.{k3}.{k4}", 'id': v4})
+                                            else:
+                                                writer.writerow({'desc': f"{key}.{k1}.{k2}.{k3}", 'id': v3})
+                                else:
+                                    writer.writerow({'desc': f"{key}.{k1}.{k2}", 'id': v2})
+                    else:
+
+                        writer.writerow({'desc': f"{key}.{k1}", 'id': v1})
+        else:
+            writer.writerow({'desc': key, 'id': value})
+  
